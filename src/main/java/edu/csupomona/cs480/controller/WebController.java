@@ -1,6 +1,8 @@
 package edu.csupomona.cs480.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,6 +16,8 @@ import edu.csupomona.cs480.App;
 import edu.csupomona.cs480.data.User;
 import edu.csupomona.cs480.data.provider.UserManager;
 
+import com.pusher.rest.*;
+
 
 /**
  * This is the controller used by Spring framework.
@@ -25,6 +29,12 @@ import edu.csupomona.cs480.data.provider.UserManager;
 
 @RestController
 public class WebController {
+	
+	private String pusher_app_id = "104581";
+	private String pusher_app_key = "f57f8fb94279cb2bc8fe";
+	private String pusher_app_secret = "f94a2e8d638dfa50ac57";
+	private String pusher_app_channel = "cs480_8-345";
+	private Pusher pusher= new Pusher(pusher_app_id, pusher_app_key, pusher_app_secret);
 
 	/**
 	 * When the class instance is annotated with
@@ -130,6 +140,34 @@ public class WebController {
         ModelAndView modelAndView = new ModelAndView("home");
         modelAndView.addObject("users", listAllUsers());
         return modelAndView;
+    }
+    
+
+    /**
+     * 
+     */
+    @RequestMapping(value = "/cs480/chat", method = RequestMethod.POST)
+    String createChat(
+    		@RequestParam("name") String name,
+    		@RequestParam("body") String body,
+    		@RequestParam("exclude") String exclude) {
+    	Map<String, String> data = new HashMap<String, String>();
+    	data.put("name", name);
+    	data.put("body", body);
+    	pusher.trigger(pusher_app_channel, "new_message", data);
+    	return "{status: 200, name: '"+name+"', body: '"+body+"'}";
+    }
+    
+    /*********** Web UI Test Utility **********/
+    /**
+     *
+     */
+    @RequestMapping(value = "/cs480/chat", method = RequestMethod.GET)
+    ModelAndView getChatHomepage() {
+    	ModelAndView modelAndView = new ModelAndView("chat");
+    	modelAndView.addObject("pusher_app_key", pusher_app_key);
+    	modelAndView.addObject("pusher_app_channel", pusher_app_channel);
+    	return modelAndView;
     }
 
 }
