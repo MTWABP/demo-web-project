@@ -143,9 +143,6 @@ public class WebController {
     }
     
 
-    /**
-     * 
-     */
     @RequestMapping(value = "/cs480/chat", method = RequestMethod.POST)
     String createChat(
     		@RequestParam("name") String name,
@@ -158,10 +155,6 @@ public class WebController {
     	return "{status: 200, name: '"+name+"', body: '"+body+"'}";
     }
     
-    /*********** Web UI Test Utility **********/
-    /**
-     *
-     */
     @RequestMapping(value = "/cs480/chat", method = RequestMethod.GET)
     ModelAndView getChatHomepage() {
     	ModelAndView modelAndView = new ModelAndView("chat");
